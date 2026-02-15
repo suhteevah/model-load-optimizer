@@ -1,0 +1,23 @@
+{
+  "name": "model-load-optimizer",
+  "version": "1.0.0",
+  "description": "OpenClaw plugin for intelligent Ollama model selection based on GPU/RAM load and model availability",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "openclaw": {
+    "extensions": ["./dist/index.js"]
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.2.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "license": "MIT"
+}

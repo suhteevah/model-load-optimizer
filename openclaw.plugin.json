@@ -1,0 +1,76 @@
+{
+  "id": "model-load-optimizer",
+  "name": "Model Load Optimizer",
+  "description": "Intelligent Ollama model routing: picks the best local model based on GPU/RAM load, model availability, and task complexity. Supports hybrid GPU+RAM offloading and automatic failover.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "ollamaHost": {
+        "type": "string",
+        "default": "http://localhost:11434",
+        "label": "Ollama Host",
+        "help": "Ollama API endpoint URL"
+      },
+      "primaryModel": {
+        "type": "string",
+        "default": "deepseek-coder-v2:16b",
+        "label": "Primary Model",
+        "help": "Preferred model for complex tasks (GPU+RAM hybrid)"
+      },
+      "sidecarModel": {
+        "type": "string",
+        "default": "qwen2.5-coder:7b",
+        "label": "Sidecar Model",
+        "help": "Fast CPU-only model for simple tasks or when GPU is busy"
+      },
+      "fallbackModel": {
+        "type": "string",
+        "label": "Remote Fallback",
+        "help": "Remote model to use when all local models are unavailable (e.g., anthropic/claude-sonnet-4-5)"
+      },
+      "keepAliveMinutes": {
+        "type": "number",
+        "default": 30,
+        "minimum": 1,
+        "maximum": 1440,
+        "label": "Keep-Alive (minutes)",
+        "help": "How long to keep models loaded in memory after use"
+      },
+      "gpuMemoryThreshold": {
+        "type": "number",
+        "default": 0.85,
+        "minimum": 0.1,
+        "maximum": 1.0,
+        "label": "GPU Memory Threshold",
+        "help": "Switch to sidecar when GPU VRAM usage exceeds this ratio (0.0-1.0)"
+      },
+      "healthCheckIntervalSec": {
+        "type": "number",
+        "default": 30,
+        "minimum": 5,
+        "maximum": 300,
+        "label": "Health Check Interval (sec)",
+        "help": "How often to poll Ollama for model status and GPU metrics"
+      },
+      "preloadOnStart": {
+        "type": "boolean",
+        "default": true,
+        "label": "Preload on Start",
+        "help": "Warm up the primary model when the plugin starts"
+      },
+      "autoRoute": {
+        "type": "boolean",
+        "default": true,
+        "label": "Auto-Route Requests",
+        "help": "Automatically select the best model per request based on load"
+      },
+      "dashboardEnabled": {
+        "type": "boolean",
+        "default": true,
+        "label": "Dashboard",
+        "help": "Serve model status dashboard at /plugins/model-load-optimizer/dashboard"
+      }
+    }
+  }
+}
