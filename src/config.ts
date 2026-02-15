@@ -17,8 +17,8 @@ export type PluginConfig = {
 
 const DEFAULTS: PluginConfig = {
   ollamaHost: "http://localhost:11434",
-  primaryModel: "deepseek-coder-v2:16b",
-  sidecarModel: "qwen2.5-coder:7b",
+  primaryModel: "qwen2.5-coder:7b",
+  sidecarModel: "deepseek-coder-v2:16b",
   keepAliveMinutes: 30,
   gpuMemoryThreshold: 0.85,
   healthCheckIntervalSec: 30,
@@ -30,6 +30,18 @@ const DEFAULTS: PluginConfig = {
 export function resolvePluginConfig(
   raw: Record<string, unknown> | undefined
 ): PluginConfig {
+  // Debug: log what raw config we received
+  if (typeof process !== "undefined" && process.env) {
+    try {
+      const debugMsg = raw
+        ? `[model-load-optimizer] Config resolver received: ${JSON.stringify(raw)}`
+        : "[model-load-optimizer] Config resolver received: undefined (using defaults)";
+      console.log(debugMsg);
+    } catch {
+      // ignore
+    }
+  }
+
   if (!raw) return { ...DEFAULTS };
 
   return {
