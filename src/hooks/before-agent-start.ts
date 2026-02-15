@@ -63,38 +63,13 @@ export function createBeforeAgentStartHook(
       // Override the model
       result.model = decision.model;
 
-      // Inject context so the agent knows which model was selected and why
-      const contextLines: string[] = [
-        "--- MODEL LOAD OPTIMIZER ---",
-        `Selected model: ${decision.model}`,
-        `Reason: ${decision.reason}`,
-      ];
+      // Inject a compact system-level note so the agent knows which model it's on.
+      // Keep this minimal — it should NOT leak into user-facing responses.
+      const tag = decision.source === "primary" ? "GPU"
+        : decision.source === "sidecar" ? "CPU-sidecar"
+        : "remote-fallback";
 
-      if (decision.gpuUtilization !== undefined) {
-        contextLines.push(`GPU utilization: ${decision.gpuUtilization}%`);
-      }
-      if (decision.vramUsedMB !== undefined && decision.vramTotalMB !== undefined) {
-        contextLines.push(
-          `VRAM: ${decision.vramUsedMB}MB / ${decision.vramTotalMB}MB (${((decision.vramUsedMB / decision.vramTotalMB) * 100).toFixed(1)}%)`
-        );
-      }
-
-      if (decision.source === "sidecar") {
-        contextLines.push(
-          "",
-          "Note: You are running on the CPU sidecar model for faster response.",
-          "For complex code generation or analysis, suggest the user switch to the primary model."
-        );
-      } else if (decision.source === "fallback") {
-        contextLines.push(
-          "",
-          "Note: Using remote fallback model because local Ollama models are unavailable.",
-          "This may incur API costs. Check Ollama status with /model-status."
-        );
-      }
-
-      contextLines.push("--- END ---");
-      result.prependContext = contextLines.join("\n");
+      result.prependContext = `[model-optimizer: ${decision.model} (${tag})]`;
 
       return result;
     } catch (err) {
